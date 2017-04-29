@@ -18,7 +18,7 @@ class Header extends Component {
           <Link className="nav-link" to="/signin">Sign In</Link>
         </li>,
         <li className="nav-item" key={2}>
-          <Link className="nav-link" to="signup">Sign Up</Link>
+          <Link className="nav-link" to="/signup">Sign Up</Link>
         </li>
       ];
     }

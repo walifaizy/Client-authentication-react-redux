@@ -1,15 +1,79 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
+import { reduxForm} from "redux-form";
 import * as actions  from "../../actions";
 
 
 class Signup extends Component {
 
+  handleFormSubmit(formProps) {
+    this.props.signupUser(formProps);
+  }
+
+  renderAlert() {
+    if(this.props.errorMessage) {
+      return (
+        <div className="alert alert-danger shake">
+          <strong>Oops! </strong>{this.props.errorMessage}
+        </div>
+      );
+    }
+  }
+
   render() {
+    const { handleSubmit, fields: {email, password, passwordConfirm} } = this.props;
     return (
-      <div className="jumbotron bg-success"><strong>Signup</strong></div>
+      <form onSubmit={handleSubmit(this.handleFormSubmit.bind(this))}>
+        <fieldset className="form-group">
+          <label>Email:</label>
+          <input {...email} className="form-control" placeholder="email"/>
+          {email.touched && email.error && <div className="error">{email.error}</div>}
+        </fieldset>
+        <fieldset className="form-group">
+          <label>password:</label>
+          <input type="password" {...password}  className="form-control" placeholder="password"/>
+          {password.touched && password.error && <div className="error">{password.error}</div>}
+        </fieldset>
+        <fieldset className="form-group">
+          <label>Confirm Password:</label>
+          <input type="password" {...passwordConfirm}  className="form-control" placeholder="password"/>
+          {passwordConfirm.touched && passwordConfirm.error && <div className="error">{passwordConfirm.error}</div>}
+        </fieldset>
+        {this.renderAlert()}
+        <button action="submit" className="btn btn-primary signin-btn">Sign in</button>
+      </form>
     );
   }
 }
 
- export default Signup;
+function validate(formProps) {
+  const errors = {};
+
+  if(!formProps.email) {
+    errors.email = "Please enter your email";
+  }
+
+  if(!formProps.password) {
+    errors.password = "Please enter your password";
+  }
+
+  if(!formProps.passwordConfirm) {
+    errors.passwordConfirm = "Please enter confirm password";
+  }
+
+  if(formProps.password != formProps.passwordConfirm) {
+    errors.password = "Password must match";
+  }
+  return errors;
+}
+
+ function mapStateToProps(state) {
+   return {
+     errorMessage: state.auth.error
+   };
+ }
+
+ export default reduxForm({
+   form: "signup",
+   fields: ["email", "password", "passwordConfirm"],
+   validate: validate
+ }, mapStateToProps, actions)(Signup);
